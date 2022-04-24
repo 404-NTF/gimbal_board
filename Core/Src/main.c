@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
 #include "i2c.h"
 #include "spi.h"
@@ -59,6 +60,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 void UpdateBuffer(uint8_t *buffer, fp32 *data, uint8_t start, uint8_t length);
 /* USER CODE END PFP */
@@ -126,6 +128,12 @@ int main(void)
   HAL_UART_Receive_IT(&huart1, &val, 1);
   /* USER CODE END 2 */
 
+  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   
@@ -205,6 +213,30 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
            the HAL_UART_TxCpltCallback could be implemented in the user file
    */
   led_off();
+  switch (val)
+  {
+  case 0x01: laser_on();                                            break;
+  case 0x02: laser_off();                                           break;
+  case 0x03: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);   break;
+  case 0x04: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);  break;
+  case 0x05:
+    
+    break;
+  case 0x06:
+    
+    break;
+  case 0x07:
+    
+    break;
+  case 0x08:
+    
+    break;
+  case 0x09:
+    
+    break;
+  }
+
+
   if (val == 0x0B)
   {
     BMI088_read(gyro, accel, &temp);
@@ -216,12 +248,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
   else if (val == 0x0C)
   {
-    led_g_on();
     __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);
   }
   else if (val == 0x0D)
   {
-    led_b_on();
     __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);
   }
   else if (val == 0x0E)
