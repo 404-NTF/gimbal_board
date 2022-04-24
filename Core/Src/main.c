@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -28,9 +29,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "BMI088driver.h"
+#include "ist8310driver.h"
 #include "bsp_led.h"
 #include "bsp_laser.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +70,16 @@ fp32 gyro[3], accel[3], temp;
 uint8_t Buffers[29];
 uint8_t val;
 uint16_t pwm;
+fp32 mag[3];
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if(GPIO_Pin == IST8310_DRDY_Pin)
+    {
+        ist8310_read_mag(mag);
+    }
+
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -105,9 +116,11 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
   while(BMI088_init());
-  pwm = PWM_OFF;
+  ist8310_init();
+  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);
   led_off();
   Buffers[28] = 0x0A;
   HAL_UART_Receive_IT(&huart1, &val, 1);
@@ -118,8 +131,7 @@ int main(void)
   
   while (1)
   {
-    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, pwm);
-    HAL_Delay(100);
+    HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -204,11 +216,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
   else if (val == 0x0C)
   {
-    pwm = PWM_ON;
+    led_g_on();
+    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);
   }
   else if (val == 0x0D)
   {
-    pwm = PWM_OFF;
+    led_b_on();
+    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);
   }
   else if (val == 0x0E)
   {
