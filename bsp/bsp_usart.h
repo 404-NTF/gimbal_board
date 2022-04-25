@@ -19,9 +19,14 @@
  * 0xFF+X -> 错误码 send_error
  */
 
+#define CALI_GYRO_LENGTH 26
+#define SET_GYRO_LENGTH 24
+#define BMI088_IST8310_LENGTH 64
+
+
 extern void bmi088_ist8310_init(void);
-extern void send_bmi088_ist8310(void);
-extern void send_INS_cali(void);
+extern void send_bmi088_ist8310(fp32 INS_gyro[3], fp32 INS_accel[3], fp32 INS_mag[3], fp32 INS_quat[4], fp32 INS_angle[3]);
+extern void send_INS_cali(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t time_count);
 extern void INS_set_cali_gyro_ok(void);
 extern int8_t get_control_temperature(void);
 

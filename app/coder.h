@@ -18,4 +18,13 @@ typedef union {
   fp32 val;
 } CharAryfp64;
 
+typedef union {
+  uint8_t byte[8];
+  uint64_t val;
+} CharAryU64;
+
+extern CharAryfp32 float_val;
+extern CharAryfp64 double_val;
+extern CharAryU64  u64_val;
+
 #endif

@@ -1,7 +1,8 @@
 #include "decoder.h"
 
-CharAryfp32 float_val;
-CharAryfp64 double_val;
+extern CharAryfp32 float_val;
+extern CharAryfp64 double_val;
+extern CharAryU64  u64_val;
 
 void get_int8_t(data_t *data, int8_t *value, uint8_t count) {
     if (count > data->length - data->curser) {
@@ -39,14 +40,15 @@ void get_int64_t(data_t *data, int64_t *value, uint8_t count) {
         return;
     }
     for (uint8_t i = 0; i < count; i++) {
-        value[i] = data->value[data->curser++];
-        value[i] |= data->value[data->curser++] << 8;
-        value[i] |= data->value[data->curser++] << 16;
-        value[i] |= data->value[data->curser++] << 24;
-        value[i] |= data->value[data->curser++] << 32;
-        value[i] |= data->value[data->curser++] << 40;
-        value[i] |= data->value[data->curser++] << 48;
-        value[i] |= data->value[data->curser++] << 56;
+        u64_val.byte[7] = data->value[data->curser++];
+        u64_val.byte[6] = data->value[data->curser++];
+        u64_val.byte[5] = data->value[data->curser++];
+        u64_val.byte[4] = data->value[data->curser++];
+        u64_val.byte[3] = data->value[data->curser++];
+        u64_val.byte[2] = data->value[data->curser++];
+        u64_val.byte[1] = data->value[data->curser++];
+        u64_val.byte[0] = data->value[data->curser++];
+        value[i] = u64_val.val;
     }
 }
 
@@ -86,14 +88,15 @@ void get_uint64_t(data_t *data, uint64_t *value, uint8_t count) {
         return;
     }
     for (uint8_t i = 0; i < count; i++) {
-        value[i] = data->value[data->curser++];
-        value[i] |= data->value[data->curser++] << 8;
-        value[i] |= data->value[data->curser++] << 16;
-        value[i] |= data->value[data->curser++] << 24;
-        value[i] |= data->value[data->curser++] << 32;
-        value[i] |= data->value[data->curser++] << 40;
-        value[i] |= data->value[data->curser++] << 48;
-        value[i] |= data->value[data->curser++] << 56;
+        u64_val.byte[7] = data->value[data->curser++];
+        u64_val.byte[6] = data->value[data->curser++];
+        u64_val.byte[5] = data->value[data->curser++];
+        u64_val.byte[4] = data->value[data->curser++];
+        u64_val.byte[3] = data->value[data->curser++];
+        u64_val.byte[2] = data->value[data->curser++];
+        u64_val.byte[1] = data->value[data->curser++];
+        u64_val.byte[0] = data->value[data->curser++];
+        value[i] = u64_val.val;
     }
 }
 

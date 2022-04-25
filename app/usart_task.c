@@ -13,8 +13,8 @@ extern TIM_HandleTypeDef htim1;
 extern UART_HandleTypeDef huart1;
 
 uint8_t val;
-uint8_t cali_gyro_val[26];
-uint8_t set_gyro_val[24];
+uint8_t cali_gyro_val[CALI_GYRO_LENGTH];
+uint8_t set_gyro_val[SET_GYRO_LENGTH];
 usart_mode_t mode;
 
 void usart_task(void const * argument) {
@@ -52,9 +52,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     }
     else if (mode == CALI_GYRO)
     {
-        
-
-        
+        fp32 cali_scale[3], cali_offset[3];
+        uint16_t time_count;
+        data_t data;
+        data.value = cali_gyro_val;
+        data.length = CALI_GYRO_LENGTH;
+        get_fp32(&data, cali_scale, 3);
+        get_fp32(&data, cali_offset, 3);
+        get_uint16_t(&data, &time_count, 1);
+        INS_cali_gyro(cali_scale, cali_offset, &time_count);
+        send_INS_cali(cali_scale, cali_offset, time_count);
         mode = NORMAL;
     }
     else if (mode == SET_GYRO)
@@ -62,7 +69,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         fp32 cali_scale[3], cali_offset[3];
         data_t data;
         data.value = set_gyro_val;
-        data.length = 24;
+        data.length = SET_GYRO_LENGTH;
         get_fp32(&data, cali_scale, 3);
         get_fp32(&data, cali_offset, 3);
         INS_set_cali_gyro(cali_scale, cali_offset);
@@ -71,24 +78,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     }
     else if (mode == GET_TEMP)
     {
-        set_temperature(&val);
+        set_temperature((int8_t *)&val);
         mode = NORMAL;
     }
 
     switch (mode)
     {
-    case NORMAL:
-        HAL_UART_Receive_IT(&huart1, &val, 1);
-        break;
-    case CALI_GYRO:
-        HAL_UART_Receive_IT(&huart1, &cali_gyro_val, 26);
-        break;
-    case SET_GYRO:
-        HAL_UART_Receive_IT(&huart1, &set_gyro_val, 24);
-        break;
-    case GET_TEMP:
-        HAL_UART_Receive_IT(&huart1, &val, 1);
-        break;
+    case NORMAL:    HAL_UART_Receive_IT(&huart1, &val, 1);                         break;
+    case CALI_GYRO: HAL_UART_Receive_IT(&huart1, cali_gyro_val, CALI_GYRO_LENGTH); break;
+    case SET_GYRO:  HAL_UART_Receive_IT(&huart1, set_gyro_val, SET_GYRO_LENGTH);   break;
+    case GET_TEMP:  HAL_UART_Receive_IT(&huart1, &val, 1);                         break;
     }    
     
 

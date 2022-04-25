@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx,ARM_MATH_CM4,__FPU_USED=1U,__FPU_PRESENT=1U,__CC_ARM,ARM_MATH_MATRIX_CHECK,ARM_MATH_ROUNDING</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;      ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;      ../Drivers/CMSIS/Include;      ../bmi088;      ../bsp;      ../app;      ../ist8310;      ../Middlewares/Third_Party/FreeRTOS/Source/include;      ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;      ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;      ../components;      ../components/include</IncludePath>
+              <IncludePath>../Core/Inc;       ../Drivers/STM32F4xx_HAL_Driver/Inc;       ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;       ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;       ../Drivers/CMSIS/Include;       ../bmi088;       ../bsp;       ../app;       ../ist8310;       ../Middlewares/Third_Party/FreeRTOS/Source/include;       ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;       ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;       ../components;       ../components/include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1493,6 +1493,21 @@
               <FileName>usart_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\usart_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>decoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\decoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>encoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\encoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>coder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\coder.c</FilePath>
             </File>
           </Files>
         </Group>

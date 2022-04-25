@@ -218,7 +218,7 @@ void INS_task(void const * argument) {
 
         if (sendValue)
         {
-            //TODO返回数据
+            send_bmi088_ist8310(INS_gyro, INS_accel, INS_mag, INS_quat, INS_angle);
             sendValue = 0;
         }
         
@@ -309,10 +309,10 @@ void gyro_offset_calc(fp32 gyro_offset[3], fp32 gyro[3], uint16_t *offset_time_c
         return;
     }
 
-        gyro_offset[0] = gyro_offset[0] - 0.0003f * gyro[0];
-        gyro_offset[1] = gyro_offset[1] - 0.0003f * gyro[1];
-        gyro_offset[2] = gyro_offset[2] - 0.0003f * gyro[2];
-        (*offset_time_count)++;
+    gyro_offset[0] = gyro_offset[0] - 0.0003f * gyro[0];
+    gyro_offset[1] = gyro_offset[1] - 0.0003f * gyro[1];
+    gyro_offset[2] = gyro_offset[2] - 0.0003f * gyro[2];
+    (*offset_time_count)++;
 }
 
 /**
@@ -324,20 +324,20 @@ void gyro_offset_calc(fp32 gyro_offset[3], fp32 gyro[3], uint16_t *offset_time_c
   */
 void INS_cali_gyro(fp32 cali_scale[3], fp32 cali_offset[3], uint16_t *time_count)
 {
-        if( *time_count == 0)
-        {
-            gyro_offset[0] = gyro_cali_offset[0];
-            gyro_offset[1] = gyro_cali_offset[1];
-            gyro_offset[2] = gyro_cali_offset[2];
-        }
-        gyro_offset_calc(gyro_offset, INS_gyro, time_count);
+    if( *time_count == 0)
+    {
+        gyro_offset[0] = gyro_cali_offset[0];
+        gyro_offset[1] = gyro_cali_offset[1];
+        gyro_offset[2] = gyro_cali_offset[2];
+    }
+    gyro_offset_calc(gyro_offset, INS_gyro, time_count);
 
-        cali_offset[0] = gyro_offset[0];
-        cali_offset[1] = gyro_offset[1];
-        cali_offset[2] = gyro_offset[2];
-        cali_scale[0] = 1.0f;
-        cali_scale[1] = 1.0f;
-        cali_scale[2] = 1.0f;
+    cali_offset[0] = gyro_offset[0];
+    cali_offset[1] = gyro_offset[1];
+    cali_offset[2] = gyro_offset[2];
+    cali_scale[0] = 1.0f;
+    cali_scale[1] = 1.0f;
+    cali_scale[2] = 1.0f;
 
 }
 
@@ -361,7 +361,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if(GPIO_Pin == INT1_ACCEL_Pin)
     {
-        detect_hook(BOARD_ACCEL_TOE);
+        send_error(BOARD_ACCEL_TOE);
         accel_update_flag |= 1 << IMU_DR_SHFITS;
         accel_temp_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
@@ -371,7 +371,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == INT1_GYRO_Pin)
     {
-        detect_hook(BOARD_GYRO_TOE);
+        send_error(BOARD_GYRO_TOE);
         gyro_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
         {
@@ -380,7 +380,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == DRDY_IST8310_Pin)
     {
-        detect_hook(BOARD_MAG_TOE);
+        send_error(BOARD_MAG_TOE);
         mag_update_flag |= 1 << IMU_DR_SHFITS;
     }
     else if(GPIO_Pin == GPIO_PIN_0)

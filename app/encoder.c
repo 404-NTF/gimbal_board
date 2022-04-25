@@ -1,7 +1,8 @@
 #include "encoder.h"
 
-CharAryfp32 float_val;
-CharAryfp64 double_val;
+extern CharAryfp32 float_val;
+extern CharAryfp64 double_val;
+extern CharAryU64  u64_val;
 
 void set_int8_t(data_t *data, int8_t *value, uint8_t count) {
     if (count > data->length - data->curser) {
