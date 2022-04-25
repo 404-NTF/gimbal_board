@@ -32,7 +32,7 @@
 #include "BMI088driver.h"
 #include "ist8310driver.h"
 #include "bsp_led.h"
-#include "bsp_laser.h"
+#include "usart_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

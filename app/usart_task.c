@@ -3,16 +3,22 @@
 #include "main.h"
 #include "INS_task.h"
 
-fp32 gyro[3], accel[3], temp;
+#include "bsp_led.h"
+#include "bsp_laser.h"
+#include "bsp_usart.h"
 
-uint8_t Buffers[29];
-uint8_t val;
+#include "decoder.h"
 
+extern TIM_HandleTypeDef htim1;
 extern UART_HandleTypeDef huart1;
 
-static void UpdateBuffer(uint8_t *buffer, fp32 *data, uint8_t start, uint8_t length);
+uint8_t val;
+uint8_t cali_gyro_val[26];
+uint8_t set_gyro_val[24];
+usart_mode_t mode;
 
 void usart_task(void const * argument) {
+    mode = NORMAL;
     HAL_UART_Receive_IT(&huart1, &val, 1);
 
     while (1)
@@ -29,37 +35,61 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
              the HAL_UART_TxCpltCallback could be implemented in the user file
      */
     led_off();
-    switch (val)
+
+    if (mode == NORMAL)
     {
-    case 0x01: laser_on();                                            break;
-    case 0x02: laser_off();                                           break;
-    case 0x03: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);   break;
-    case 0x04: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);  break;
-    case 0x06: INS_callback();                                        break;
-    case 0x07:
-        // 校准
-        break;
-    case 0x08:
-        // 设置陀螺仪偏移
-        break;
+        switch (val)
+        {
+        case 0x01: laser_on();                                            break;
+        case 0x02: laser_off();                                           break;
+        case 0x03: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);   break;
+        case 0x04: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);  break;
+        case 0x06: INS_callback();                                        break;
+        case 0x08: mode = CALI_GYRO;                                      break;
+        case 0x0A: mode = SET_GYRO;                                       break;
+        case 0x0D: mode = GET_TEMP;                                       break;
+        }
     }
-  
-    HAL_UART_Receive_IT(&huart1, &val, 1);
+    else if (mode == CALI_GYRO)
+    {
+        
+
+        
+        mode = NORMAL;
+    }
+    else if (mode == SET_GYRO)
+    {
+        fp32 cali_scale[3], cali_offset[3];
+        data_t data;
+        data.value = set_gyro_val;
+        data.length = 24;
+        get_fp32(&data, cali_scale, 3);
+        get_fp32(&data, cali_offset, 3);
+        INS_set_cali_gyro(cali_scale, cali_offset);
+        INS_set_cali_gyro_ok();
+        mode = NORMAL;
+    }
+    else if (mode == GET_TEMP)
+    {
+        set_temperature(&val);
+        mode = NORMAL;
+    }
+
+    switch (mode)
+    {
+    case NORMAL:
+        HAL_UART_Receive_IT(&huart1, &val, 1);
+        break;
+    case CALI_GYRO:
+        HAL_UART_Receive_IT(&huart1, &cali_gyro_val, 26);
+        break;
+    case SET_GYRO:
+        HAL_UART_Receive_IT(&huart1, &set_gyro_val, 24);
+        break;
+    case GET_TEMP:
+        HAL_UART_Receive_IT(&huart1, &val, 1);
+        break;
+    }    
+    
+
 }
-
-
-void UpdateBuffer(uint8_t *buffer, fp32 *data, uint8_t start, uint8_t length)
-{
-  FloatAndCharAry *f;
-  uint8_t i;
-  for(i = 0; i < length; i++)
-  {
-    f = (FloatAndCharAry*)&data[i];
-    buffer[start * 4 + i * 4] = f->byte[0];
-    buffer[start * 4 + i * 4 + 1] = f->byte[1];
-    buffer[start * 4 + i * 4 + 2] = f->byte[2];
-    buffer[start * 4 + i * 4 + 3] = f->byte[3];
-  }
-}
-
-

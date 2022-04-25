@@ -231,7 +231,7 @@ void INS_task(void const * argument) {
  * 
  */
 void INS_callback(void) {
-    if (!sendValue)
+    if (sendValue == 0)
     {
         sendValue = 1;
     }
