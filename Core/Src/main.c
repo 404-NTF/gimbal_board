@@ -42,8 +42,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define PWM_ON 890
-#define PWM_OFF 1730
 
 /* USER CODE END PD */
 
@@ -62,25 +60,11 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-void UpdateBuffer(uint8_t *buffer, fp32 *data, uint8_t start, uint8_t length);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-fp32 gyro[3], accel[3], temp;
-
-uint8_t Buffers[29];
-uint8_t val;
-uint16_t pwm;
-fp32 mag[3];
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if(GPIO_Pin == IST8310_DRDY_Pin)
-    {
-        ist8310_read_mag(mag);
-    }
-
-}
 
 /* USER CODE END 0 */
 
@@ -124,8 +108,6 @@ int main(void)
   ist8310_init();
   __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);
   led_off();
-  Buffers[28] = 0x0A;
-  HAL_UART_Receive_IT(&huart1, &val, 1);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -191,80 +173,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void UpdateBuffer(uint8_t *buffer, fp32 *data, uint8_t start, uint8_t length)
-{
-  FloatAndCharAry *f;
-  uint8_t i;
-  for(i = 0; i < length; i++)
-  {
-    f = (FloatAndCharAry*)&data[i];
-    buffer[start * 4 + i * 4] = f->byte[0];
-    buffer[start * 4 + i * 4 + 1] = f->byte[1];
-    buffer[start * 4 + i * 4 + 2] = f->byte[2];
-    buffer[start * 4 + i * 4 + 3] = f->byte[3];
-  }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(huart);
-  /* NOTE: This function Should not be modified, when the callback is needed,
-           the HAL_UART_TxCpltCallback could be implemented in the user file
-   */
-  led_off();
-  switch (val)
-  {
-  case 0x01: laser_on();                                            break;
-  case 0x02: laser_off();                                           break;
-  case 0x03: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);   break;
-  case 0x04: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);  break;
-  case 0x05:
-    
-    break;
-  case 0x06:
-    
-    break;
-  case 0x07:
-    
-    break;
-  case 0x08:
-    
-    break;
-  case 0x09:
-    
-    break;
-  }
-
-
-  if (val == 0x0B)
-  {
-    BMI088_read(gyro, accel, &temp);
-    UpdateBuffer(Buffers, gyro, 0, 3);
-    UpdateBuffer(Buffers, accel, 3, 3);
-    UpdateBuffer(Buffers, &temp, 6, 1);
-    HAL_UART_Transmit(&huart1, Buffers, 29, 1000);
-    while(HAL_UART_GetState(&huart1) == HAL_UART_STATE_BUSY_TX);
-  }
-  else if (val == 0x0C)
-  {
-    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);
-  }
-  else if (val == 0x0D)
-  {
-    __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);
-  }
-  else if (val == 0x0E)
-  {
-    laser_on();
-  }
-  else if (val == 0x0F)
-  {
-    laser_off();
-  }
-  
-	HAL_UART_Receive_IT(&huart1, &val, 1);
-}
 
 /* USER CODE END 4 */
 
