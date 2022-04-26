@@ -1,7 +1,7 @@
-#ifndef ERROR_LIST_H
-#define ERROR_LIST_H
+#ifndef DETECT_HOOK_H
+#define DETECT_HOOK_H
 
-enum errorList
+enum hooks
 {
     DBUS_TOE = 0,
     CHASSIS_MOTOR1_TOE,

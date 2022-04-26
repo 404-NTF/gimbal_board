@@ -7,11 +7,12 @@
 #include "bsp_usart.h"
 #include "bsp_imu_pwm.h"
 #include "bsp_spi.h"
+#include "bsp_led.h"
 #include "bmi088driver.h"
 #include "ist8310driver.h"
 #include "pid.h"
 #include "ahrs.h"
-#include "error_list.h"
+#include "detect_hook.h"
 
 #define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm给定
 
@@ -113,18 +114,20 @@ fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.欧拉角 �
 bool_t sendValue;
 
 void INS_task(void const * argument) {
-    osDelay(INS_TASK_INIT_TIME);
+    led_r_on();
+    HAL_Delay(INS_TASK_INIT_TIME);
+    led_g_on();
     sendValue = 0;
-    bmi088_ist8310_init();
     while (BMI088_init())
     {
-        osDelay(100);
+        HAL_Delay(100);
     }
+    led_g_on();
     while (ist8310_init())
     {
-        osDelay(100);
+        HAL_Delay(100);
     }
-
+    led_b_on();
     BMI088_read(bmi088_real_data.gyro, bmi088_real_data.accel, &bmi088_real_data.temp);
     //rotate and zero drift 
     imu_cali_slove(INS_gyro, INS_accel, INS_mag, &bmi088_real_data, &ist8310_real_data);
@@ -361,7 +364,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if(GPIO_Pin == INT1_ACCEL_Pin)
     {
-        send_error(BOARD_ACCEL_TOE);
+        send_hook(BOARD_ACCEL_TOE);
         accel_update_flag |= 1 << IMU_DR_SHFITS;
         accel_temp_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
@@ -371,7 +374,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == INT1_GYRO_Pin)
     {
-        send_error(BOARD_GYRO_TOE);
+        send_hook(BOARD_GYRO_TOE);
         gyro_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
         {
@@ -380,7 +383,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == DRDY_IST8310_Pin)
     {
-        send_error(BOARD_MAG_TOE);
+        send_hook(BOARD_MAG_TOE);
         mag_update_flag |= 1 << IMU_DR_SHFITS;
     }
     else if(GPIO_Pin == GPIO_PIN_0)

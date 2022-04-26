@@ -20,10 +20,11 @@ usart_mode_t mode;
 void usart_task(void const * argument) {
     mode = NORMAL;
     HAL_UART_Receive_IT(&huart1, &val, 1);
-
     while (1)
     {
-        osDelay(500);
+        led_b_on();
+        HAL_Delay(500);
+
     }
 }
 
@@ -61,7 +62,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         get_fp32(&data, cali_offset, 3);
         get_uint16_t(&data, &time_count, 1);
         INS_cali_gyro(cali_scale, cali_offset, &time_count);
-        send_INS_cali(cali_scale, cali_offset, time_count);
+        INS_cali_gyro_ok();
         mode = NORMAL;
     }
     else if (mode == SET_GYRO)
