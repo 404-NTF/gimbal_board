@@ -26,7 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "usart_task.h"
 #include "INS_task.h"
 /* USER CODE END Includes */
 
@@ -47,18 +46,16 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-osThreadId imuTaskHandle;
-osThreadId usartTaskHandle;
 
 /* USER CODE END Variables */
-osThreadId testTaskHandle;
+osThreadId insTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void test_task(void const * argument);
+void INS_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -121,39 +118,32 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of testTask */
-  osThreadDef(testTask, test_task, osPriorityIdle, 0, 128);
-  testTaskHandle = osThreadCreate(osThread(testTask), NULL);
+  /* definition and creation of insTask */
+  osThreadDef(insTask, INS_task, osPriorityRealtime, 0, 1024);
+  insTaskHandle = osThreadCreate(osThread(insTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  osThreadDef(imuTask, INS_task, osPriorityRealtime, 0, 1024);
-  imuTaskHandle = osThreadCreate(osThread(imuTask), NULL);
-
-  /* definition and creation of usartTask */
-  osThreadDef(usartTask, usart_task, osPriorityIdle, 0, 128);
-  usartTaskHandle = osThreadCreate(osThread(usartTask), NULL);
-
   /* USER CODE END RTOS_THREADS */
 
 }
 
-/* USER CODE BEGIN Header_test_task */
+/* USER CODE BEGIN Header_INS_task */
 /**
-  * @brief  Function implementing the testTask thread.
+  * @brief  Function implementing the insTask thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_test_task */
-__weak void test_task(void const * argument)
+/* USER CODE END Header_INS_task */
+__weak void INS_task(void const * argument)
 {
-  /* USER CODE BEGIN test_task */
+  /* USER CODE BEGIN INS_task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END test_task */
+  /* USER CODE END INS_task */
 }
 
 /* Private application code --------------------------------------------------*/

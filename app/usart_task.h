@@ -11,6 +11,6 @@ typedef enum {
     GET_TEMP,
 } usart_mode_t;
 
-extern void usart_task(void const * argument);
+extern void usart_init(void);
 
 #endif

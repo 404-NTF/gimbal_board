@@ -115,19 +115,18 @@ bool_t sendValue;
 
 void INS_task(void const * argument) {
     led_r_on();
-    HAL_Delay(INS_TASK_INIT_TIME);
+    osDelay(7);
+    led_off();
     led_g_on();
     sendValue = 0;
     while (BMI088_init())
     {
-        HAL_Delay(100);
+        osDelay(100);
     }
-    led_g_on();
     while (ist8310_init())
     {
-        HAL_Delay(100);
+        osDelay(100);
     }
-    led_b_on();
     BMI088_read(bmi088_real_data.gyro, bmi088_real_data.accel, &bmi088_real_data.temp);
     //rotate and zero drift 
     imu_cali_slove(INS_gyro, INS_accel, INS_mag, &bmi088_real_data, &ist8310_real_data);
@@ -364,7 +363,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if(GPIO_Pin == INT1_ACCEL_Pin)
     {
-        send_hook(BOARD_ACCEL_TOE);
         accel_update_flag |= 1 << IMU_DR_SHFITS;
         accel_temp_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
@@ -374,7 +372,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == INT1_GYRO_Pin)
     {
-        send_hook(BOARD_GYRO_TOE);
         gyro_update_flag |= 1 << IMU_DR_SHFITS;
         if(imu_start_dma_flag)
         {
@@ -383,7 +380,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else if(GPIO_Pin == DRDY_IST8310_Pin)
     {
-        send_hook(BOARD_MAG_TOE);
         mag_update_flag |= 1 << IMU_DR_SHFITS;
     }
     else if(GPIO_Pin == GPIO_PIN_0)

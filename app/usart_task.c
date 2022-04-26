@@ -1,5 +1,4 @@
 #include "usart_task.h"
-#include "cmsis_os.h"
 #include "main.h"
 #include "INS_task.h"
 
@@ -15,17 +14,11 @@ extern UART_HandleTypeDef huart1;
 uint8_t val;
 uint8_t cali_gyro_val[CALI_GYRO_LENGTH];
 uint8_t set_gyro_val[SET_GYRO_LENGTH];
-usart_mode_t mode;
+usart_mode_t mode = NORMAL;
 
-void usart_task(void const * argument) {
+void usart_init(void) {
     mode = NORMAL;
     HAL_UART_Receive_IT(&huart1, &val, 1);
-    while (1)
-    {
-        led_b_on();
-        HAL_Delay(500);
-
-    }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
