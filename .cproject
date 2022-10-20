@@ -82,7 +82,7 @@
                   <listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Inc" /></option>
                 								
                 <option id="gnu.c.compiler.option.preprocessor.def.symbols.1174832903" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
@@ -112,7 +112,7 @@
                   <listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Inc" /></option>
                 								
                 <option id="gnu.cpp.compiler.option.preprocessor.def.1923702727" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
@@ -133,7 +133,7 @@
                 								
                 <option id="gnu.c.link.option.libs.633637092" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs" />
                 								
-                <option id="gnu.c.link.option.paths.1762881682" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths" />
+                <option id="gnu.c.link.option.paths.1762881682" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths"><listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Lib" /></option>
                 								
                 <option id="gnu.c.link.option.ldflags.366416371" superClass="gnu.c.link.option.ldflags" value="-specs=nosys.specs -specs=nano.specs" valueType="string" />
                 								
@@ -155,7 +155,7 @@
                 								
                 <option id="gnu.cpp.link.option.libs.92810979" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs" />
                 								
-                <option id="gnu.cpp.link.option.paths.2132917313" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths" />
+                <option id="gnu.cpp.link.option.paths.2132917313" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths"><listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Lib" /></option>
                 								
                 <option id="gnu.cpp.link.option.flags.436623150" superClass="gnu.cpp.link.option.flags" value="-specs=nosys.specs -specs=nano.specs" valueType="string" />
                 								
@@ -287,7 +287,7 @@
                   <listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Inc" /></option>
                 								
                 <option id="gnu.c.compiler.option.preprocessor.def.symbols.1174832903" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
@@ -317,7 +317,7 @@
                   <listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
                   <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
-                </option>
+                <listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Inc" /></option>
                 								
                 <option id="gnu.cpp.compiler.option.preprocessor.def.symbols.2017034268" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
                   <listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
@@ -338,7 +338,7 @@
                 								
                 <option id="gnu.c.link.option.libs.633637092" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs" />
                 								
-                <option id="gnu.c.link.option.paths.1762881682" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths" />
+                <option id="gnu.c.link.option.paths.1762881682" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths"><listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Lib" /></option>
                 								
                 <option id="gnu.c.link.option.ldflags.366416371" superClass="gnu.c.link.option.ldflags" value="-specs=nosys.specs -specs=nano.specs" valueType="string" />
                 								
@@ -360,7 +360,7 @@
                 								
                 <option id="gnu.cpp.link.option.libs.92810979" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs" />
                 								
-                <option id="gnu.cpp.link.option.paths.2132917313" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths" />
+                <option id="gnu.cpp.link.option.paths.2132917313" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths"><listOptionValue builtIn="false" value="../Middlewares/ST/ARM/DSP/Lib" /></option>
                 								
                 <option id="gnu.cpp.link.option.ldflags.1716100963" superClass="gnu.cpp.link.option.ldflags" value="-specs=nosys.specs -specs=nano.specs" valueType="string" />
                 								

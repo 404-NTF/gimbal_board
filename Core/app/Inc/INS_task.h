@@ -35,7 +35,7 @@
 #define INS_GYRO_Y_ADDRESS_OFFSET 1
 #define INS_GYRO_Z_ADDRESS_OFFSET 2
 
-extern void INS_task(void const * argument);
+extern void INS_task(void * argument);
 
 /**
  * @brief       返回陀螺仪的数据

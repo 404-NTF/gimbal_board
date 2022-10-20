@@ -11,7 +11,6 @@
 #include "ist8310driver.h"
 #include "pid.h"
 #include "ahrs.h"
-#include "detect_hook.h"
 
 #include "bsp_led.h"
 
@@ -118,7 +117,7 @@ fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.欧拉角 �
 bool_t started;
 bool_t sendValue;
 
-void INS_task(void const * argument) {
+void INS_task(void * argument) {
     started = 0;
     sendValue = 0;
 
