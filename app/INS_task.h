@@ -44,6 +44,12 @@ extern void INS_task(void const * argument);
 extern void INS_callback(void);
 
 /**
+ * @brief       任务开始
+ * 
+ */
+extern void INS_task_init(int8_t *temp);
+
+/**
   * @brief          校准陀螺仪
   * @param[out]     陀螺仪的比例因子，1.0f为默认值，不修改
   * @param[out]     陀螺仪的零漂，采集陀螺仪的静止的输出作为offset

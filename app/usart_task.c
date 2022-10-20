@@ -28,20 +28,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     /* NOTE: This function Should not be modified, when the callback is needed,
              the HAL_UART_TxCpltCallback could be implemented in the user file
      */
-    led_off();
-
     if (mode == NORMAL)
-    {
+    {        
         switch (val)
         {
         case 0x01: laser_on();                                            break;
         case 0x02: laser_off();                                           break;
         case 0x03: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_ON);   break;
         case 0x04: __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, PWM_OFF);  break;
-        case 0x06: INS_callback();                                        break;
-        case 0x08: mode = CALI_GYRO;                                      break;
+        case 0x05: mode = INS_INIT;                                       break;
+        case 0x07: INS_callback();                                        break;
+        case 0x09: mode = CALI_GYRO;                                      break;
         case 0x0A: mode = SET_GYRO;                                       break;
-        case 0x0D: mode = GET_TEMP;                                       break;
         }
     }
     else if (mode == CALI_GYRO)
@@ -55,7 +53,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         get_fp32(&data, cali_offset, 3);
         get_uint16_t(&data, &time_count, 1);
         INS_cali_gyro(cali_scale, cali_offset, &time_count);
-        INS_cali_gyro_ok();
         mode = NORMAL;
     }
     else if (mode == SET_GYRO)
@@ -67,12 +64,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         get_fp32(&data, cali_scale, 3);
         get_fp32(&data, cali_offset, 3);
         INS_set_cali_gyro(cali_scale, cali_offset);
-        INS_set_cali_gyro_ok();
         mode = NORMAL;
     }
-    else if (mode == GET_TEMP)
+    else if (mode == INS_INIT)
     {
-        set_temperature((int8_t *)&val);
+        INS_task_init((int8_t *)&val);
         mode = NORMAL;
     }
 
@@ -81,7 +77,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     case NORMAL:    HAL_UART_Receive_IT(&huart1, &val, 1);                         break;
     case CALI_GYRO: HAL_UART_Receive_IT(&huart1, cali_gyro_val, CALI_GYRO_LENGTH); break;
     case SET_GYRO:  HAL_UART_Receive_IT(&huart1, set_gyro_val, SET_GYRO_LENGTH);   break;
-    case GET_TEMP:  HAL_UART_Receive_IT(&huart1, &val, 1);                         break;
+    case INS_INIT:  HAL_UART_Receive_IT(&huart1, &val, 1);                         break;
     }    
     
 

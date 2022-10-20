@@ -7,12 +7,13 @@
 #include "bsp_usart.h"
 #include "bsp_imu_pwm.h"
 #include "bsp_spi.h"
-#include "bsp_led.h"
 #include "bmi088driver.h"
 #include "ist8310driver.h"
 #include "pid.h"
 #include "ahrs.h"
 #include "detect_hook.h"
+
+#include "bsp_led.h"
 
 #define IMU_temp_PWM(pwm)  imu_pwm_set(pwm)                    //pwm给定
 
@@ -97,6 +98,8 @@ static const fp32 imu_temp_PID[3] = {TEMPERATURE_PID_KP, TEMPERATURE_PID_KI, TEM
 static pid_type_def imu_temp_pid;
 
 static const float timing_time = 0.001f;   //tast run time , unit s.任务运行的时间 单位 s
+static int8_t temperature;
+
 
 //加速度计低通滤波
 static fp32 accel_fliter_1[3] = {0.0f, 0.0f, 0.0f};
@@ -111,14 +114,19 @@ static fp32 INS_mag[3] = {0.0f, 0.0f, 0.0f};
 static fp32 INS_quat[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 fp32 INS_angle[3] = {0.0f, 0.0f, 0.0f};      //euler angle, unit rad.欧拉角 单位 rad
 
+
+bool_t started;
 bool_t sendValue;
 
 void INS_task(void const * argument) {
-    led_r_on();
-    osDelay(7);
-    led_off();
-    led_g_on();
+    started = 0;
     sendValue = 0;
+
+    // 等待控制板发送初始化命令
+    while (started == 0) {
+        osDelay(100);
+    }
+
     while (BMI088_init())
     {
         osDelay(100);
@@ -152,18 +160,17 @@ void INS_task(void const * argument) {
 
     SPI1_DMA_init((uint32_t)gyro_dma_tx_buf, (uint32_t)gyro_dma_rx_buf, SPI_DMA_GYRO_LENGHT);
 
-    bmi088_ist8310_init();
+    bmi088_ist8310_init_ok();
     imu_start_dma_flag = 1;
 
     while (1)
     {
+        led_off();
         //wait spi DMA tansmit done
         //等待SPI DMA传输
         while (ulTaskNotifyTake(pdTRUE, portMAX_DELAY) != pdPASS)
         {
         }
-
-
         if(gyro_update_flag & (1 << IMU_NOTIFY_SHFITS))
         {
             gyro_update_flag &= ~(1 << IMU_NOTIFY_SHFITS);
@@ -218,8 +225,9 @@ void INS_task(void const * argument) {
 //            ist8310_read_mag(ist8310_real_data.mag);
         }
 
-        if (sendValue)
+        if (sendValue == 1)
         {
+            led_g_on();
             send_bmi088_ist8310(INS_gyro, INS_accel, INS_mag, INS_quat, INS_angle);
             sendValue = 0;
         }
@@ -236,6 +244,18 @@ void INS_callback(void) {
     if (sendValue == 0)
     {
         sendValue = 1;
+    }
+}
+
+void INS_task_init(int8_t *temp) {
+    if (imu_start_dma_flag)
+    {
+        bmi088_ist8310_init_ok();
+    }
+    else if (started == 0)
+    {
+        started = 1;
+        temperature = *temp;
     }
 }
 
@@ -269,7 +289,7 @@ static void imu_temp_control(fp32 temp)
     static uint8_t temp_constant_time = 0;
     if (first_temperate)
     {
-        PID_calc(&imu_temp_pid, temp, get_control_temperature());
+        PID_calc(&imu_temp_pid, temp, temperature);
         if (imu_temp_pid.out < 0.0f)
         {
             imu_temp_pid.out = 0.0f;
@@ -281,7 +301,7 @@ static void imu_temp_control(fp32 temp)
     {
         //在没有达到设置的温度，一直最大功率加热
         //in beginning, max power
-        if (temp > get_control_temperature())
+        if (temp > temperature)
         {
             temp_constant_time++;
             if (temp_constant_time > 200)
@@ -385,7 +405,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     else if(GPIO_Pin == GPIO_PIN_0)
     {
 
-        //wake up the task
         //唤醒任务
         if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         {

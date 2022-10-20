@@ -8,7 +8,7 @@ typedef enum {
     NORMAL = 0,
     CALI_GYRO,
     SET_GYRO,
-    GET_TEMP,
+    INS_INIT,
 } usart_mode_t;
 
 extern void usart_init(void);
